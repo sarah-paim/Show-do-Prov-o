@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Show do Provão</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at center, #00003c, #000010);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 25px;
+      box-shadow: 0 0 25px #ffd700, 0 0 50px #1a237e;
+      backdrop-filter: blur(10px);
+      position: relative;
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 800;
+      text-align: center;
+      color: #ffeb3b;
+      text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.2), 0 0 20px #ffd700;
+    }
+
+    .question {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      text-align: center;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .options div {
+      display: block;
+      width: 100%;
+      margin: 12px 0;
+      padding: 18px;
+      font-size: 20px;
+      border-radius: 15px;
+      background-color: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      text-align: left;
+      transition: 0.3s;
+      border: 2px solid transparent;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+
+    .options div:hover {
+      transform: scale(1.03);
+      background-color: rgba(255, 255, 255, 0.3);
+      border-color: #fff176;
+    }
+
+    .correct {
+      background-color: #00e676 !important;
+      border-color: #00e676 !important;
+    }
+
+    .selected {
+      background-color: #ffd54f;
+    }
+
+    .timer {
+      font-size: 30px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 15px;
+      color: #f44336;
+      background-color: #ffeb3b;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #ffeb3b;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    button {
+      display: block;
+      margin: 25px auto 0;
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    button:hover {
+      background-color: #ff8a65;
+      transform: scale(1.08);
+    }
+
+    #result h2 {
+      font-size: 32px;
+      color: #00e676;
+      text-align: center;
+      margin-top: 40px;
+      text-shadow: 0 0 10px #00e676;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 30px;
+      }
+      .question {
+        font-size: 22px;
+      }
+      .options div {
+        font-size: 16px;
+      }
+      .timer {
+        font-size: 24px;
+        padding: 15px;
+      }
+    }
+
+    /* Botão de pular mais discreto */
+    #skipBtn {
+      background-color: transparent;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      font-size: 16px;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      margin-top: 10px;
+      display: block;
+      width: auto;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #skipBtn:hover {
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    .logo {
+  display: block;
+  margin: 0 auto 40px auto;
+  max-width: 300px;
+  width: 80%;
+  filter: drop-shadow(0 0 10px #ffd700) drop-shadow(0 0 30px #fff176) drop-shadow(0 0 60px #1a237e);
+  animation: fadeIn 1.5s ease-out;
+}
+  </style>
+</head>
+<body>
+
+  <div id="startScreen" style="text-align: center; padding: 100px;">
+    <img src="logo.png" alt="Logo Show do Provão" class="logo" />
+    <button onclick="startGame()">Começar</button>
+  </div>
+
+  <div class="container hidden" id="gameContainer">
+
+    <div id="quiz">
+      <p class="question" id="question"></p>
+      <div class="options" id="options"></div>
+      <p id="timer" class="timer">Tempo: 20s</p>
+      <button onclick="revealAnswer()" id="revealBtn" class="hidden">Revelar Resposta Correta</button>
+      <button onclick="nextQuestion()" id="nextBtn" class="hidden">Próxima Pergunta</button>
+      <button onclick="skipQuestion()" id="skipBtn">Pular Pergunta</button>
+    </div>
+
+    <div id="result" class="hidden">
+        <img src="logo.png" alt="Logo Show do Provão" class="logo" />
+      <h2>Parabéns, você concluiu o Show do Provão!</h2>
+      <p style="text-align: center;">Você acertou <span id="score"></span> de 10 perguntas!</p>
+      <button onclick="restartGame()">Jogar Novamente</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+ /*2*/{ question: 'O que significa redemocratização?', options: ['Novo regime autoritário', 'Retorno à democracia após período autoritário', 'Revolução de viés popular', 'Mudança no sistema de governo brasileiro', 'Golpe militar'], answer: 1 },
+ /*5*/{ question: 'O que caracteriza o autoritarismo?', options: ['Liberdade de expressão', 'Sistema de governo democrático', 'Direitos civis expandidos', 'Multiplicação de partidos políticos de direita', 'Ausência de liberdade política'], answer: 4 },
+ /*4*/{ question: 'O que foi o AI-5 durante a Ditadura Militar?', options: ['Ato que derrubou o governo', 'Ato que garantiu direitos civis', 'Ato que promoveu eleições diretas', 'Ato que permitiu a repressão e a censura', 'Ato que foi aprovado em 1988'], answer: 3 },
+ /*3*/{ question: 'Quando foi promulgada a Lei da Anistia?', options: ['1988', '1985', '1979', '1990', '1993'], answer: 2 },
+ /*1*/{ question: 'Como os EUA influenciaram a Ditadura Militar no Brasil?', options: ['Apoiando o regime durante a Guerra Fria', 'Fornecendo apoio econômico à democracia', 'Intervindo para garantir eleições livres', 'Sustentando os direitos humanos', 'Fomentando movimentos sociais'], answer: 0 },
+ /*2*/{ question: 'O que foi o movimento Diretas Já?', options: ['Movimento que apoiava a ditadura', 'Movimento pela eleição direta de presidentes', 'Movimento militar para derrubar o governo', 'Movimento sindicalista', 'Movimento pela expansão da censura'], answer: 1 },
+ /*3*/{ question: 'Quem foi o presidente durante o fim do AI-5?', options: ['Figueiredo', 'Costa e Silva', 'Geisel', 'Tancredo Neves', 'Lula'], answer: 2 },
+ /*1*/{ question: 'Quando foi assinada a Constituição de 1988?', options: ['5 de outubro de 1988', '1 de janeiro de 1989', '7 de setembro de 1988', '10 de novembro de 1988', '15 de outubro de 1988'], answer: 0 },
+ /*5*/{ question: 'Qual foi o principal avanço da Constituição de 1988?', options: ['Reforma no sistema eleitoral da época', 'Extinção dos partidos políticos de esquerda', 'Censura à imprensa', 'Retorno ao regime militar', 'Garantia dos direitos fundamentais e políticos'], answer: 4 },
+ /*4*/{ question: 'O que é a justiça de transição no Brasil?', options: ['Movimento para irradiar a ditadura no país', 'Sistema de punição aos torturadores ditatoriais', 'Reinício da repressão política', 'Processo de reparação dos danos causados pela Ditadura', 'Apoio irrestrito ao regime militar'], answer: 3 }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let timer;
+    let timeLeft;
+
+    function startGame() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('gameContainer').classList.remove('hidden');
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      q.options.forEach((opt, index) => {
+        const div = document.createElement('div');
+        div.textContent = `${index + 1}. ${opt}`;
+        div.id = `option-${index}`;
+        div.classList.add('option');
+        optionsDiv.appendChild(div);
+      });
+
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.getElementById('revealBtn').classList.add('hidden');
+      document.getElementById('skipBtn').classList.remove('hidden');
+      document.getElementById('timer').textContent = "Tempo: 20s";
+      startTimer();
+    }
+
+    function startTimer() {
+      timeLeft = 20;
+      document.getElementById('timer').textContent = `Tempo: ${timeLeft}s`;
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = `Tempo: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          document.getElementById('timer').textContent = "Tempo Acabou!";
+          document.getElementById('revealBtn').classList.remove('hidden');
+        }
+      }, 1000);
+    }
+
+    function revealAnswer() {
+      const q = questions[current];
+      const correctDiv = document.getElementById(`option-${q.answer}`);
+      if (correctDiv) {
+        correctDiv.classList.add('correct');
+        score++;
+      }
+      document.getElementById('nextBtn').classList.remove('hidden');
+      document.getElementById('revealBtn').classList.add('hidden');
+      document.getElementById('skipBtn').classList.add('hidden');
+    }
+
+    function skipQuestion() {
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      document.getElementById('quiz').classList.add('hidden');
+      document.getElementById('result').classList.remove('hidden');
+      document.getElementById('score').textContent = score;
+    }
+
+    function restartGame() {
+      current = 0;
+      score = 0;
+      document.getElementById('result').classList.add('hidden');
+      document.getElementById('gameContainer').classList.remove('hidden');
+      showQuestion();
+    }
+  </script>
+
+</body>
+</html>
+
